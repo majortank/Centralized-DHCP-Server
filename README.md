@@ -39,17 +39,32 @@ INTERFACESv4="enp11s0"
 
 ### 2. DHCP Declarations
 
-Each VLAN is defined as a `subnet` block. To prevent IP conflicts, ranges are generally restricted to `.10` through `.250`, leaving the `.1 - .9` and `.251 - .254` ranges for gateways and infrastructure.
+Each VLAN is defined as a `subnet` block in [`dhcpd.conf`](dhcpd.conf). To prevent IP conflicts, ranges are restricted to `.10` through `.240`, leaving the `.1 - .9` and `.241 - .254` ranges for gateways and static infrastructure devices (e.g., the server at `.231`).
 
-**Example Block (Block A):**
+The full configuration covers **102 subnets** across seven sectors:
+
+| Sector | Address Range | VLANs |
+|--------|--------------|-------|
+| Infrastructure | `10.10.x.0/24` | Voice, Security, Server Farms, Computer Centre, GYMHALL |
+| Academic Block Labs (A–V) | `10.20.x.0/24` | One wired lab per block |
+| Academic Block Wireless (A–V) | `10.21.x.0/24` | One wireless network per block |
+| Student Common Areas | `10.30.x.0/24` | Wireless zones, BYOD, Guest, MFDs |
+| Staff / Administration | `10.40.x.0/24` | Admin, Finance, HR, ICT, Registrar |
+| Remote Campus — Deveyton | `10.100.x.0/24` | Admin, Labs, Staff, Voice |
+| Remote Campus — Secunda | `10.60.x.0/24` | Admin, Labs, Staff, Voice |
+| Specialized Facilities | `10.50.x.0/24` | Engineering, Science, Design, Health Sciences |
+
+**Example Block (Block A Lab):**
 
 ```conf
-subnet 198.51.100.0 netmask 255.255.255.0 {
-  range 198.51.100.10 198.51.100.250;
-  option routers 198.51.100.253;
+subnet 10.20.1.0 netmask 255.255.255.0 {
+  range 10.20.1.10 10.20.1.240;
+  option routers 10.20.1.253;
   option domain-name-servers 192.0.2.1, 192.0.2.2;
 }
 ```
+
+Copy [`dhcpd.conf`](dhcpd.conf) to `/etc/dhcp/dhcpd.conf` on the server to deploy the full configuration.
 
 ## 🔧 Maintenance Commands
 
